@@ -1,7 +1,9 @@
-const { Schema, model, Types } = require('mongoose');
-const dateFormat = require('../utils/dateFormat');
+const mongoose = require('mongoose');
+const { Schema, model, Types } = mongoose;
+const moment = require('moment');
 
-// Define the Reaction schema (used as a subdocument)
+// sets up reactions schema
+
 const reactionSchema = new Schema({
   reactionId: {
     type: Schema.Types.ObjectId,
@@ -19,14 +21,18 @@ const reactionSchema = new Schema({
   createdAt: {
     type: Date,
     default: Date.now,
-    get: timestamp => dateFormat(timestamp),
+    get: (timestamp) => moment(timestamp).format('MMM DD, YYYY [at] hh:mm a'),
   },
-}, {
-  toJSON: { getters: true },
+},
+{
+  toJSON: {
+    getters: true,
+  },
   id: false,
 });
 
-// Define the Thought schema
+//set up thoughts schema
+
 const thoughtSchema = new Schema({
   thoughtText: {
     type: String,
@@ -37,19 +43,22 @@ const thoughtSchema = new Schema({
   createdAt: {
     type: Date,
     default: Date.now,
-    get: timestamp => dateFormat(timestamp),
+    get: (timestamp) => moment(timestamp).format('MMM DD, YYYY [at] hh:mm a'),
   },
   username: {
     type: String,
     required: true,
   },
   reactions: [reactionSchema],
-}, {
-  toJSON: { virtuals: true, getters: true },
+},
+{
+  toJSON: {
+    virtuals: true,
+    getters: true,
+  },
   id: false,
 });
 
-// Create a virtual property for reaction count
 thoughtSchema.virtual('reactionCount').get(function () {
   return this.reactions.length;
 });

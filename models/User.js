@@ -1,11 +1,11 @@
-const { Schema, model } = require('mongoose');
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-// Define the User schema
 const userSchema = new Schema({
   username: {
     type: String,
-    unique: true,
     required: true,
+    unique: true,
     trim: true,
   },
   email: {
@@ -26,16 +26,18 @@ const userSchema = new Schema({
       ref: 'User',
     },
   ],
-}, {
-  toJSON: { virtuals: true },
+},
+{
+  toJSON: {
+    virtuals: true,
+  },
   id: false,
 });
 
-// Create a virtual property for friend count
 userSchema.virtual('friendCount').get(function () {
   return this.friends.length;
 });
 
-const User = model('User', userSchema);
+const User = mongoose.model('User', userSchema);
 
 module.exports = User;
